@@ -1,1 +1,190 @@
+<!DOCTYPE html>
+<html lang="so">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>MAHIIGAN Shop - Dambiisha Xisaabinta</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; font-family: 'Segoe UI', sans-serif; }
+        body { background-color: #121212; color: #ffffff; padding-bottom: 60px; }
+        
+        header {
+            background-color: #1a1a1a; padding: 15px 20px;
+            display: flex; justify-content: space-between; align-items: center;
+            position: sticky; top: 0; z-index: 1000;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.3);
+        }
+        .logo { font-size: 24px; font-weight: bold; color: #00ff88; text-transform: uppercase; text-decoration: none; }
+        .nav-links { display: flex; list-style: none; }
+        .nav-links li a { color: #ffffff; text-decoration: none; margin: 0 15px; font-size: 16px; }
+        .nav-links li a.active { color: #00ff88; }
 
+        .cart-container { max-width: 1000px; margin: 40px auto; padding: 0 20px; }
+        h1 { color: #00ff88; margin-bottom: 20px; border-bottom: 2px solid #222; padding-bottom: 10px; }
+
+        /* Shaxda Dambiisha */
+        .cart-table { width: 100%; border-collapse: collapse; margin-top: 20px; text-align: left; }
+        .cart-table th, .cart-table td { padding: 15px; border-bottom: 1px solid #222; }
+        .cart-table th { background-color: #1a1a1a; color: #00ff88; }
+        
+        .qty-controls button {
+            background-color: #333; color: white; border: none;
+            padding: 5px 10px; cursor: pointer; font-weight: bold; border-radius: 4px;
+        }
+        .qty-controls button:hover { background-color: #00ff88; color: #121212; }
+        .qty-controls span { margin: 0 10px; font-weight: bold; }
+
+        .delete-btn { background-color: #ff3333; color: white; border: none; padding: 6px 12px; border-radius: 4px; cursor: pointer; }
+        .delete-btn:hover { background-color: white; color: #ff3333; }
+
+        /* Khaanadda Xisaabiyaha Weyn */
+        .summary-box {
+            background-color: #1a1a1a; padding: 25px; border-radius: 10px;
+            margin-top: 30px; max-width: 400px; margin-left: auto;
+            border: 1px solid #333;
+        }
+        .summary-row { display: flex; justify-content: space-between; margin-bottom: 15px; font-size: 18px; }
+        .total-row { border-top: 1px solid #444; padding-top: 15px; font-weight: bold; font-size: 22px; color: #00ff88; }
+
+        .checkout-btn {
+            width: 100%; background-color: #00ff88; color: #121212;
+            border: none; padding: 15px; border-radius: 6px;
+            font-size: 18px; font-weight: bold; cursor: pointer; transition: 0.3s;
+        }
+        .checkout-btn:hover { background-color: white; box-shadow: 0 0 15px rgba(0,255,136,0.6); }
+
+        .empty-msg { text-align: center; font-size: 20px; color: #888; margin-top: 50px; }
+        .back-shop-btn { display: inline-block; margin-top: 20px; color: #00ff88; text-decoration: none; font-weight: bold; }
+    </style>
+</head>
+<body>
+
+    <header>
+        <a href="shop.html" class="logo">MAHIIGAN Shop</a>
+        <ul class="nav-links">
+            <li><a href="index.html">Home</a></li>
+            <li><a href="shop.html">Shop</a></li>
+            <li><a href="cart.html" class="active">Cart</a></li>
+            <li><a href="contact.html">Contact</a></li>
+        </ul>
+    </header>
+
+    <div class="cart-container">
+        <h1>🛒 Dambiishaada</h1>
+
+        <div id="cartContent">
+            </div>
+
+        <div class="summary-box" id="summaryBox" style="display: none;">
+            <div class="summary-row">
+                <span>Alaabta Dalban:</span>
+                <span id="totalItemsCount">0 xabo</span>
+            </div>
+            <div class="summary-row">
+                <span>Kariinka (Shipping):</span>
+                <span style="color: #00ff88;">Bilaash (Free)</span>
+            </div>
+            <div class="summary-row total-row">
+                <span>Wadarta (Total):</span>
+                <span id="cartTotalPrice">$0.00</span>
+            </div>
+            <button class="checkout-btn" onclick="processCheckout()">Dhameystir Dalabka 🚀</button>
+        </div>
+    </div>
+
+    <script>
+        let cart = JSON.parse(localStorage.getItem('mahiigan_cart')) || [];
+
+        function displayCart() {
+            const container = document.getElementById('cartContent');
+            const summaryBox = document.getElementById('summaryBox');
+
+            if (cart.length === 0) {
+                container.innerHTML = `
+                    <div class="empty-msg">
+                        <p>Dambiishaadu hadda waa maran tahay sxb! 🤔</p>
+                        <a href="shop.html" class="back-shop-btn">⬅️ Ku laabo Dukaanka si aad alaab u soo xusho</a>
+                    </div>`;
+                summaryBox.style.display = "none";
+                return;
+            }
+
+            summaryBox.style.display = "block";
+            
+            let tableHTML = `
+                <table class="cart-table">
+                    <thead>
+                        <tr>
+                            <th>Alaabta</th>
+                            <th>Nooca</th>
+                            <th>Qiimaha</th>
+                            <th>Tirada</th>
+                            <th>Isu-geyn</th>
+                            <th>Waxqabad</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+            `;
+
+            let totalQuantity = 0;
+            let totalPrice = 0;
+
+            cart.forEach((item, index) => {
+                let itemSubtotal = item.price * item.qty;
+                totalQuantity += item.qty;
+                totalPrice += itemSubtotal;
+
+                tableHTML += `
+                    <tr>
+                        <td style="font-weight:bold;">${item.title}</td>
+                        <td><span style="background:#222; padding:3px 8px; border-radius:4px; font-size:13px;">${item.size}</span></td>
+                        <td>$${item.price.toFixed(2)}</td>
+                        <td class="qty-controls">
+                            <button onclick="changeQty(${index}, -1)">-</button>
+                            <span>${item.qty}</span>
+                            <button onclick="changeQty(${index}, 1)">+</button>
+                        </td>
+                        <td style="color:#00ff88; font-weight:bold;">$${itemSubtotal.toFixed(2)}</td>
+                        <td><button class="delete-btn" onclick="removeItem(${index})">Tirtir ❌</button></td>
+                    </tr>
+                `;
+            });
+
+            tableHTML += `</tbody></table>`;
+            container.innerHTML = tableHTML;
+
+            // Cusboonaysii Xisaabiyaha hoose
+            document.getElementById('totalItemsCount').innerText = `${totalQuantity} xabo`;
+            document.getElementById('cartTotalPrice').innerText = `$${totalPrice.toFixed(2)}`;
+        }
+
+        // Kordhi ama dhimi tirada alaabta
+        function changeQty(index, amount) {
+            cart[index].qty += amount;
+            if (cart[index].qty <= 0) {
+                cart.splice(index, 1); // Haddii ay 0 gaarto tirtir alaabta
+            }
+            localStorage.setItem('mahiigan_cart', JSON.stringify(cart));
+            displayCart();
+        }
+
+        // Tirtir alaab gooni ah
+        function removeItem(index) {
+            cart.splice(index, 1);
+            localStorage.setItem('mahiigan_cart', JSON.stringify(cart));
+            displayCart();
+        }
+
+        // Marka la riixo dhameystir
+        function processCheckout() {
+            alert("🎉 Dalabkaaga waa la helay sxb! Mahadsanid ku xirnaanshaha MAHIIGAN Shop.");
+            cart = [];
+            localStorage.removeItem('mahiigan_cart');
+            displayCart();
+        }
+
+        // Shid markii ugu horeysay
+        displayCart();
+    </script>
+</body>
+</html>
