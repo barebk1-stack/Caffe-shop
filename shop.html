@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>MAHIIGAN Shop - Dukaanka</title>
+    <title>MAHIIGAN Shop - Dukaanka Midaysan</title>
     
     <style>
         /* 1. Dib-u-hagaajin Guud */
@@ -21,23 +21,19 @@
             transition: background 0.3s, color 0.3s;
         }
 
-        /* Jiritaanka Light Mode */
         body.light-mode {
             background-color: #ffffff;
             color: #121212;
         }
-        body.light-mode header, body.light-mode .sidebar, body.light-mode .product-card, body.light-mode footer {
+        body.light-mode header, body.light-mode .sidebar, body.light-mode .product-card, body.light-mode footer, body.light-mode .details-view {
             background-color: #f4f4f4;
             color: #121212;
             border-color: #ddd;
         }
-        body.light-mode .nav-links li a, body.light-mode .sidebar-links li a {
-            color: #333;
-        }
-        body.light-mode .filter-btn {
-            background-color: #eee;
-            color: #333;
-        }
+        body.light-mode .nav-links li a, body.light-mode .sidebar-links li a { color: #333; }
+        body.light-mode .filter-btn { background-color: #eee; color: #333; }
+        body.light-mode .details-info select, body.light-mode .details-info input { background-color: #fff; color: #121212; border-color: #ccc; }
+        body.light-mode .comment-item { background-color: #e9e9e9; color: #333; }
 
         /* 2. Header & Navigation */
         header {
@@ -58,13 +54,10 @@
             color: #00ff88;
             text-transform: uppercase;
             letter-spacing: 1px;
+            cursor: pointer;
         }
 
-        .nav-links {
-            display: flex;
-            list-style: none;
-        }
-
+        .nav-links { display: flex; list-style: none; align-items: center; }
         .nav-links li a {
             color: #ffffff;
             text-decoration: none;
@@ -72,9 +65,17 @@
             font-size: 16px;
             transition: 0.3s ease;
         }
+        .nav-links li a:hover, .nav-links li a.active { color: #00ff88; }
 
-        .nav-links li a:hover, .nav-links li a.active {
-            color: #00ff88;
+        /* Tiro-koobka Dambiisha ee Header-ka ku dhex jira */
+        .cart-count-badge {
+            background-color: #00ff88;
+            color: #121212;
+            padding: 2px 8px;
+            border-radius: 50px;
+            font-size: 12px;
+            font-weight: bold;
+            margin-left: 5px;
         }
 
         .menu-btn {
@@ -86,13 +87,7 @@
             cursor: pointer;
             z-index: 1001;
         }
-
-        .menu-btn div {
-            width: 100%;
-            height: 3px;
-            background-color: #ffffff;
-            transition: 0.3s ease;
-        }
+        .menu-btn div { width: 100%; height: 3px; background-color: #ffffff; transition: 0.3s ease; }
 
         /* 3. Sidebar */
         .sidebar {
@@ -107,42 +102,14 @@
             padding: 80px 30px;
             z-index: 999;
         }
+        .sidebar.open { right: 0; }
+        .sidebar h3 { color: #00ff88; margin-bottom: 20px; border-bottom: 1px solid #333; padding-bottom: 10px; }
+        .sidebar-links { list-style: none; }
+        .sidebar-links li { margin: 20px 0; }
+        .sidebar-links li a { color: #bbb; text-decoration: none; font-size: 18px; display: flex; align-items: center; transition: 0.3s; cursor: pointer; }
+        .sidebar-links li a:hover { color: #00ff88; padding-left: 10px; }
 
-        .sidebar.open {
-            right: 0;
-        }
-
-        .sidebar h3 {
-            color: #00ff88;
-            margin-bottom: 20px;
-            border-bottom: 1px solid #333;
-            padding-bottom: 10px;
-        }
-
-        .sidebar-links {
-            list-style: none;
-        }
-
-        .sidebar-links li {
-            margin: 20px 0;
-        }
-
-        .sidebar-links li a {
-            color: #bbb;
-            text-decoration: none;
-            font-size: 18px;
-            display: flex;
-            align-items: center;
-            transition: 0.3s;
-            cursor: pointer;
-        }
-
-        .sidebar-links li a:hover {
-            color: #00ff88;
-            padding-left: 10px;
-        }
-
-        /* 4. Filter Section (Kala-saarista Alaabta) */
+        /* 4. Filter Section */
         .filter-container {
             max-width: 1200px;
             margin: 30px auto;
@@ -152,7 +119,6 @@
             gap: 15px;
             flex-wrap: wrap;
         }
-
         .filter-btn {
             background-color: #1a1a1a;
             color: #ffffff;
@@ -163,20 +129,14 @@
             font-weight: 600;
             transition: 0.3s;
         }
-
         .filter-btn:hover, .filter-btn.active {
             background-color: #00ff88;
             color: #121212;
             border-color: #00ff88;
         }
 
-        /* 5. Product Grid */
-        .shop-section {
-            max-width: 1200px;
-            margin: 0 auto;
-            padding: 20px;
-        }
-
+        /* 5. Dukaanka (Shop View) */
+        .shop-section { max-width: 1200px; margin: 0 auto; padding: 20px; }
         .product-grid {
             display: grid;
             grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
@@ -193,110 +153,120 @@
             display: flex;
             flex-direction: column;
         }
+        .product-card:hover { transform: translateY(-8px); border-color: #00ff88; }
 
-        .product-card:hover {
-            transform: translateY(-8px);
-            border-color: #00ff88;
-        }
+        .card-click-area { cursor: pointer; }
 
         .product-img {
             width: 100%;
-            height: 220px;
+            height: 240px;
+            object-fit: cover;
             background-color: #333;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            color: #888;
-            font-weight: bold;
+            display: block;
         }
 
-        .product-info {
-            padding: 25px;
-            display: flex;
-            flex-direction: column;
-            gap: 10px;
-            flex-grow: 1;
-        }
-
-        .product-title {
-            font-size: 19px;
-            font-weight: bold;
-        }
-
-        .product-price {
-            color: #00ff88;
-            font-size: 18px;
-            font-weight: bold;
-        }
-
-        /* Badhamada hoose ee Labada ah */
-        .btn-group {
-            display: flex;
-            gap: 10px;
-            margin-top: auto; /* Had iyo jeer hoosta ku hay badhamada */
-        }
-
-        .detail-btn {
-            flex: 1;
-            background-color: transparent;
-            color: #ffffff;
-            border: 1px solid #555;
-            padding: 10px;
-            border-radius: 6px;
-            cursor: pointer;
-            font-weight: 600;
-            transition: 0.3s;
-        }
-
-        .detail-btn:hover {
-            border-color: #ffffff;
-        }
+        .product-info { padding: 20px; display: flex; flex-direction: column; gap: 8px; flex-grow: 1; }
+        .product-title { font-size: 19px; font-weight: bold; }
+        .product-price { color: #00ff88; font-size: 18px; font-weight: bold; }
 
         .cart-btn {
-            flex: 1;
+            width: 100%;
             background-color: #00ff88;
             color: #121212;
             border: none;
-            padding: 10px;
+            padding: 12px;
             border-radius: 6px;
             cursor: pointer;
             font-weight: bold;
+            font-size: 15px;
             transition: 0.3s;
         }
+        .cart-btn:hover { background-color: #ffffff; }
 
-        .cart-btn:hover {
-            background-color: #ffffff;
+        /* 6. Product Details View */
+        .details-view {
+            max-width: 1100px;
+            margin: 40px auto;
+            padding: 20px;
+            display: none;
+            gap: 50px;
+            flex-wrap: wrap;
+            animation: fadeIn 0.4s ease;
         }
 
-        /* 6. Footer */
-        footer {
+        @keyframes fadeIn { from { opacity: 0; } to { opacity: 1; } }
+
+        .back-btn {
+            background-color: #333;
+            color: #fff;
+            border: 1px solid #444;
+            padding: 10px 20px;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 600;
+            margin-bottom: 20px;
+            transition: 0.3s;
+            display: inline-block;
+        }
+        .back-btn:hover { background-color: #00ff88; color: #121212; }
+
+        .details-img-container {
+            flex: 1;
+            min-width: 300px;
+            height: 400px;
             background-color: #1a1a1a;
-            text-align: center;
-            padding: 25px;
-            margin-top: 50px;
-            border-top: 1px solid #222;
-            color: #777;
+            border-radius: 12px;
+            overflow: hidden;
+            border: 1px solid #333;
+        }
+        .details-img { width: 100%; height: 100%; object-fit: cover; }
+
+        .details-info {
+            flex: 1.2;
+            min-width: 300px;
+            display: flex;
+            flex-direction: column;
+            gap: 20px;
+        }
+        .details-title { font-size: 32px; font-weight: bold; }
+        .details-price { font-size: 26px; color: #00ff88; font-weight: bold; }
+        .details-desc { color: #aaa; line-height: 1.6; font-size: 16px; }
+
+        .details-options { display: flex; gap: 20px; }
+        .details-options select, .details-options input {
+            background-color: #1a1a1a;
+            color: white;
+            border: 1px solid #333;
+            padding: 10px 15px;
+            border-radius: 6px;
+            font-size: 16px;
+            outline: none;
         }
 
-        @media (max-width: 768px) {
-            .nav-links {
-                display: none;
-            }
+        .comments-section { width: 100%; margin-top: 40px; border-top: 1px solid #333; padding-top: 20px; }
+        .comment-item {
+            background-color: #1a1a1a;
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 12px;
+            border-left: 4px solid #00ff88;
+            color: #ccc;
         }
+
+        footer { background-color: #1a1a1a; text-align: center; padding: 25px; margin-top: 50px; border-top: 1px solid #222; color: #777; }
+        @media (max-width: 768px) { .nav-links { display: none; } .details-view { gap: 25px; } }
     </style>
 </head>
 <body>
 
     <header>
-        <div class="logo">MAHIIGAN Shop</div>
-        
+        <div class="logo" onclick="showShopView()">MAHIIGAN Shop</div>
         <ul class="nav-links">
             <li><a href="index.html">Home</a></li>
-            <li><a href="shop.html" class="active">Shop</a></li>
-            <li><a href="cart.html">Cart</a></li>
+            <li><a href="#" class="active" onclick="showShopView()">Shop</a></li>
+            <li><a href="cart.html">Cart <span class="cart-count-badge" id="headerCartCount">0</span></a></li>
             <li><a href="contact.html">Contact</a></li>
         </ul>
-
         <div class="menu-btn" id="menuBtn">
             <div style="background-color: #00ff88;"></div>
             <div></div>
@@ -308,7 +278,7 @@
         <h3>⚙️ Settings & More</h3>
         <ul class="sidebar-links">
             <li><a href="index.html">🏠 Bogga Hore</a></li>
-            <li><a href="shop.html">🛍️ Dukaanka</a></li>
+            <li><a href="#" onclick="showShopView()">🛍️ Dukaanka</a></li>
             <li><a href="cart.html">🛒 Dambiisha</a></li>
             <li><a href="contact.html">📞 Nala Xiriir</a></li>
             <hr style="border: 0.5px solid #333; margin: 15px 0;">
@@ -316,125 +286,222 @@
         </ul>
     </div>
 
-    <div class="filter-container">
-        <button class="filter-btn active" id="filterAll">Dhamaan</button>
-        <button class="filter-btn" id="filterElectronics">Electronics</button>
-        <button class="filter-btn" id="filterClothing">Clothing</button>
+    <div id="shopPageArea">
+        <div class="filter-container">
+            <button class="filter-btn active" id="filterAll">Dhamaan</button>
+            <button class="filter-btn" id="filterElectronics">Electronics</button>
+            <button class="filter-btn" id="filterClothing">Clothing</button>
+        </div>
+
+        <main class="shop-section">
+            <div class="product-grid" id="mainProductGrid"></div>
+        </main>
     </div>
 
-    <main class="shop-section">
-        <div class="product-grid">
-            
-            <div class="product-card" id="product-1">
-                <div class="product-img">Saacad Smart Ah</div>
-                <div class="product-info">
-                    <div class="product-title">Smart Watch v2</div>
-                    <div class="product-price">$45.00</div>
-                    <div class="btn-group">
-                        <button class="detail-btn" id="viewDetail-1">Eeg</button>
-                        <button class="cart-btn" id="addToCart-1">Ku Dar</button>
-                    </div>
-                </div>
+    <div id="detailsPageArea" style="max-width: 1100px; margin: 30px auto; padding: 0 20px; display: none;">
+        <button class="back-btn" onclick="showShopView()">⬅️ Ku noqo Dukaanka</button>
+        
+        <main class="details-view" id="mainDetailsView">
+            <div class="details-img-container">
+                <img src="#" alt="Alaabta" class="details-img" id="dynamicDetailsImg">
             </div>
 
-            <div class="product-card" id="product-2">
-                <div class="product-img">Jaakad Jiinis Ah</div>
-                <div class="product-info">
-                    <div class="product-title">Premium Denim Jacket</div>
-                    <div class="product-price">$60.00</div>
-                    <div class="btn-group">
-                        <button class="detail-btn" id="viewDetail-2">Eeg</button>
-                        <button class="cart-btn" id="addToCart-2">Ku Dar</button>
+            <div class="details-info">
+                <h1 class="details-title" id="dynamicDetailsTitle">Magaca Alaabta</h1>
+                <div class="details-price" id="dynamicDetailsPrice">$0.00</div>
+                <p class="details-desc" id="dynamicDetailsDesc">Sharaxaad...</p>
+                
+                <div class="details-options">
+                    <div>
+                        <label style="font-size: 13px; color:#888; display:block; margin-bottom:5px;">Size</label>
+                        <select id="detailsSize">
+                            <option value="Standard">Standard</option>
+                            <option value="Pro Edition">Pro Edition</option>
+                        </select>
+                    </div>
+                    <div>
+                        <label style="font-size: 13px; color:#888; display:block; margin-bottom:5px;">Tirada</label>
+                        <input type="number" id="detailsQty" value="1" min="1" max="10">
                     </div>
                 </div>
+                
+                <button class="cart-btn" style="margin-top: 15px;" id="detailsAddBtn">Ku Dar Dambiisha 🛒</button>
             </div>
 
-            <div class="product-card" id="product-3">
-                <div class="product-img">Samyacadaha Wireless</div>
-                <div class="product-info">
-                    <div class="product-title">Bluetooth Earbuds</div>
-                    <div class="product-price">$30.00</div>
-                    <div class="btn-group">
-                        <button class="detail-btn" id="viewDetail-3">Eeg</button>
-                        <button class="cart-btn" id="addToCart-3">Ku Dar</button>
-                    </div>
-                </div>
+            <div class="comments-section">
+                <h3 style="color: #00ff88; margin-bottom: 10px;">💬 Faallooyinka Macamiisha (Comments)</h3>
+                <div id="dynamicCommentsList"></div>
             </div>
-
-        </div>
-    </main>
+        </main>
+    </div>
 
     <footer>
         <p>&copy; 2026 MAHIIGAN Shop. Dhamaan xuquuqda waa dhowran tahay.</p>
     </footer>
 
     <script>
+        // --- 1. Maamulka Header & Theme ---
         const menuBtn = document.getElementById('menuBtn');
         const sidebar = document.getElementById('sidebar');
         const themeToggle = document.getElementById('themeToggle');
 
-        // Fura/Xira Sidebar
-        menuBtn.addEventListener('click', () => {
-            sidebar.classList.toggle('open');
-        });
-
-        // Dark/Light Mode
+        menuBtn.addEventListener('click', () => sidebar.classList.toggle('open'));
         themeToggle.addEventListener('click', () => {
             document.body.classList.toggle('light-mode');
-            if(document.body.classList.contains('light-mode')) {
-                themeToggle.innerHTML = "☀️ Maalin Mode: On";
-            } else {
-                themeToggle.innerHTML = "🌙 Dark Mode: On";
+            themeToggle.innerHTML = document.body.classList.contains('light-mode') ? "☀️ Maalin Mode: On" : "🌙 Dark Mode: On";
+        });
+
+        // --- 2. Khaanadda Sawirada iyo Xogta ---
+        const products = [
+            {
+                id: "1",
+                category: "electronics",
+                title: "Smart Watch v2",
+                price: 45.00, // Loo bedelay Number si fudud loogu xisaabiyo
+                imgUrl: "#", 
+                desc: "Kani waa qalab casri ah oo loogu talagalay inuu kuu fududeeyo noloshaada maalin laha ah. Wuxuu leeyahay batari adag, screen aad u cad.",
+                comments: ["Aad ba u fiicantahay saacadani!", "Batarigeedu aad buu u adag yahay."]
+            },
+            {
+                id: "2",
+                category: "clothing",
+                title: "Premium Denim Jacket",
+                price: 60.00,
+                imgUrl: "#", 
+                desc: "Jaakad Jiinis ah oo aad u tayo sarreysa, ku habboon xilliyada qaboobaha iyo dhar-gashiga rasmiga ah.",
+                comments: ["Aad ba u qurux badantahay jaakadu!", "Tayadeedu waa 100%"]
+            },
+            {
+                id: "3",
+                category: "electronics",
+                title: "Bluetooth Earbuds",
+                price: 30.00,
+                imgUrl: "#", 
+                desc: "Samyacado wireless ah oo leh cod aad u nadiif ah (Bass adag), kuna habboon ciyaaraha sida PUBG Mobile.",
+                comments: ["Codkeedu waa waali sxb!", "PUBG-ga dib u dhac ma leh."]
             }
-        });
+        ];
 
-        // ----------------------------------------------------
-        // TUSAALE: QAABKA SHAANDHEYNTU U SHAQAYNAYSO (FILTER)
-        // ----------------------------------------------------
-        const filterAll = document.getElementById('filterAll');
-        const filterElectronics = document.getElementById('filterElectronics');
-        const filterClothing = document.getElementById('filterClothing');
+        // --- 3. Dambiisha array (Cart Data) ---
+        let cart = JSON.parse(localStorage.getItem('mahiigan_cart')) || [];
 
-        const prod1 = document.getElementById('product-1'); // Electronics
-        const prod2 = document.getElementById('product-2'); // Clothing
-        const prod3 = document.getElementById('product-3'); // Electronics
-
-        // Marka la gujiyo "Dhamaan"
-        filterAll.addEventListener('click', () => {
-            prod1.style.display = "flex";
-            prod2.style.display = "flex";
-            prod3.style.display = "flex";
-            setActiveFilter(filterAll);
-        });
-
-        // Marka la gujiyo "Electronics"
-        filterElectronics.addEventListener('click', () => {
-            prod1.style.display = "flex";
-            prod2.style.display = "none"; // Qari kan dhar-ka ah
-            prod3.style.display = "flex";
-            setActiveFilter(filterElectronics);
-        });
-
-        // Marka la gujiyo "Clothing"
-        filterClothing.addEventListener('click', () => {
-            prod1.style.display = "none"; // Qari saacada
-            prod2.style.display = "flex"; // Muuji jaakada
-            prod3.style.display = "none"; // Qari earbuds-ka
-            setActiveFilter(filterClothing);
-        });
-
-        function setActiveFilter(activeBtn) {
-            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
-            activeBtn.classList.add('active');
+        function updateHeaderCartCount() {
+            const totalItems = cart.reduce((sum, item) => sum + item.qty, 0);
+            document.getElementById('headerCartCount').innerText = totalItems;
         }
 
-        // Badhamada "Eeg" waxay u dirayaan bogga faahfaahinta rasmiga ah
-        document.getElementById('viewDetail-1').addEventListener('click', () => { window.location.href = 'product-details.html'; });
-        document.getElementById('viewDetail-2').addEventListener('click', () => { window.location.href = 'product-details.html'; });
-        document.getElementById('viewDetail-3').addEventListener('click', () => { window.location.href = 'product-details.html'; });
+        // --- 4. Soo Bandhigista Dukaanka ---
+        const grid = document.getElementById('mainProductGrid');
 
-        // Badhamada "Ku Dar" waxay toos kuu geynayaan dambiisha (Tijaabo)
-        document.getElementById('addToCart-1').addEventListener('click', () => { alert('Saacada waa la xushay!'); window.location.href = 'cart.html'; });
+        function displayProducts(productsList) {
+            grid.innerHTML = ""; 
+            productsList.forEach(p => {
+                const card = document.createElement('div');
+                card.className = "product-card";
+                
+                card.innerHTML = `
+                    <div class="card-click-area" onclick="showProductDetailsView('${p.id}')">
+                        <img src="${p.imgUrl}" alt="${p.title}" class="product-img" onerror="this.style.display='none'; this.nextElementSibling.style.display='flex';">
+                        <div style="display:none; height:240px; background-color:#333; justify-content:center; align-items:center; color:#888; font-weight:bold; font-size:18px;">${p.title}</div>
+                        <div class="product-info">
+                            <div class="product-title">${p.title}</div>
+                            <div class="product-price">$${p.price.toFixed(2)}</div>
+                        </div>
+                    </div>
+                    <div style="padding: 0 20px 20px 20px;">
+                        <button class="cart-btn" onclick="addToCart('${p.id}', 'Standard', 1)">Ku Dar 🛒</button>
+                    </div>
+                `;
+                grid.appendChild(card);
+            });
+        }
+
+        // --- 5. Maamulka SPA Views ---
+        let currentActiveId = null;
+
+        function showProductDetailsView(id) {
+            currentActiveId = id;
+            const p = products.find(prod => prod.id === id);
+            
+            document.getElementById('shopPageArea').style.display = "none";
+            document.getElementById('detailsPageArea').style.display = "block";
+            document.getElementById('mainDetailsView').style.display = "flex";
+
+            document.getElementById('dynamicDetailsTitle').innerText = p.title;
+            document.getElementById('dynamicDetailsPrice').innerText = `$${p.price.toFixed(2)}`;
+            document.getElementById('dynamicDetailsDesc').innerText = p.desc;
+            
+            const detailsImg = document.getElementById('dynamicDetailsImg');
+            detailsImg.src = p.imgUrl;
+            detailsImg.onerror = function() { this.src = "https://via.placeholder.com/400x400?text=" + encodeURIComponent(p.title); };
+
+            const commentsContainer = document.getElementById('dynamicCommentsList');
+            commentsContainer.innerHTML = ""; 
+            p.comments.forEach(comment => {
+                const div = document.createElement('div');
+                div.className = "comment-item";
+                div.innerText = `👤 Macmiil: "${comment}"`;
+                commentsContainer.appendChild(div);
+            });
+            window.scrollTo(0,0);
+        }
+
+        function showShopView() {
+            document.getElementById('detailsPageArea').style.display = "none";
+            document.getElementById('mainDetailsView').style.display = "none";
+            document.getElementById('shopPageArea').style.display = "block";
+            document.getElementById('detailsQty').value = 1;
+            window.scrollTo(0,0);
+        }
+
+        // --- 6. XISAABTA KUDARISTA DAMBIISHA ---
+        function addToCart(id, size, qty) {
+            const p = products.find(prod => prod.id === id);
+            qty = parseInt(qty);
+            
+            // Fiiri in alaabtaan hore dambiisha ugu jirtay iyo in kale
+            const existingItem = cart.find(item => item.id === id && item.size === size);
+            
+            if(existingItem) {
+                existingItem.qty += qty;
+            } else {
+                cart.push({
+                    id: p.id,
+                    title: p.title,
+                    price: p.price,
+                    imgUrl: p.imgUrl,
+                    size: size,
+                    qty: qty
+                });
+            }
+            
+            // Kaydi
+            localStorage.setItem('mahiigan_cart', JSON.stringify(cart));
+            updateHeaderCartCount();
+            alert(`🛒 ${p.title} (${qty} xabo) waa lagu daray dambiisha!`);
+        }
+
+        document.getElementById('detailsAddBtn').addEventListener('click', () => {
+            if(!currentActiveId) return;
+            const size = document.getElementById('detailsSize').value;
+            const qty = document.getElementById('detailsQty').value;
+            addToCart(currentActiveId, size, qty);
+            showShopView();
+        });
+
+        // Filters
+        document.getElementById('filterAll').addEventListener('click', () => { displayProducts(products); setActiveFilter('filterAll'); });
+        document.getElementById('filterElectronics').addEventListener('click', () => { displayProducts(products.filter(p => p.category === 'electronics')); setActiveFilter('filterElectronics'); });
+        document.getElementById('filterClothing').addEventListener('click', () => { displayProducts(products.filter(p => p.category === 'clothing')); setActiveFilter('filterClothing'); });
+
+        function setActiveFilter(id) {
+            document.querySelectorAll('.filter-btn').forEach(btn => btn.classList.remove('active'));
+            document.getElementById(id).classList.add('active');
+        }
+
+        // Shid markii ugu horeysay
+        displayProducts(products);
+        updateHeaderCartCount();
     </script>
 </body>
 </html>
